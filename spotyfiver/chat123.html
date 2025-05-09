@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat entre abas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            width: 450px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .chat-box {
+            height: 400px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message {
+            max-width: 70%;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 10px;
+            word-wrap: break-word;
+        }
+
+        .sent {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .received {
+            align-self: flex-start;
+            background-color: #ffeb3b;
+            color: black;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 0 5px;
+        }
+
+        .send-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .chat-title {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .user-selection {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="user-selection">
+        <label for="userSelect">Escolha seu usuário:</label>
+        <select id="userSelect" onchange="setUser()">
+            <option value="none">-- Selecione --</option>
+            <option value="1">Usuário 1</option>
+            <option value="2">Usuário 2</option>
+        </select>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-title" id="chatTitle">Chat</div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input-area">
+            <input type="text" id="messageInput" placeholder="Digite sua mensagem..." disabled>
+            <button class="send-button" onclick="sendMessage()" disabled>Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = localStorage.getItem("chatUser") || "none";
+
+        function setUser() {
+            currentUser = document.getElementById("userSelect").value;
+            localStorage.setItem("chatUser", currentUser);
+            setupChat();
+        }
+
+        function setupChat() {
+            let chatTitle = document.getElementById("chatTitle");
+            let inputField = document.getElementById("messageInput");
+            let sendButton = document.querySelector(".send-button");
+
+            if (currentUser === "1") {
+                chatTitle.textContent = "Usuário 1";
+            } else if (currentUser === "2") {
+                chatTitle.textContent = "Usuário 2";
+            } else {
+                chatTitle.textContent = "Chat";
+            }
+
+            if (currentUser !== "none") {
+                inputField.removeAttribute("disabled");
+                sendButton.removeAttribute("disabled");
+            } else {
+                inputField.setAttribute("disabled", true);
+                sendButton.setAttribute("disabled", true);
+            }
+
+            loadMessages();
+        }
+
+        function sendMessage() {
+            if (currentUser === "none") return;
+
+            let input = document.getElementById("messageInput");
+            let message = input.value.trim();
+            if (message === "") return;
+
+            let messageData = {
+                sender: currentUser,
+                content: message,
+                timestamp: new Date().getTime()
+            };
+
+            saveMessage(messageData);
+            input.value = "";
+        }
+
+        function saveMessage(messageData) {
+            let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+            messages.push(messageData);
+            localStorage.setItem("chatMessages", JSON.stringify(messages));
+
+            updateChat();
+        }
+
+        function updateChat() {
+            let chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = "";
+
+            let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+
+            messages.forEach(msg => {
+                let msgDiv = document.createElement("div");
+                msgDiv.classList.add("chat-message");
+
+                if (msg.sender === currentUser) {
+                    msgDiv.classList.add("sent");
+                } else {
+                    msgDiv.classList.add("received");
+                }
+
+                msgDiv.textContent = msg.content;
+                chatBox.appendChild(msgDiv);
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function loadMessages() {
+            updateChat();
+        }
+
+        window.addEventListener("storage", function(event) {
+            if (event.key === "chatMessages") {
+                updateChat();
+            }
+        });
+
+        document.getElementById("messageInput").addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        setupChat();
+    </script>
+</body>
+</html>

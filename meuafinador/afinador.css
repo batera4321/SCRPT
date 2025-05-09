@@ -1,0 +1,157 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+  padding: 20px;
+}
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.main-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #800080;
+}
+.tuner-config,
+.panel {
+  background: #111;
+  border: 1px solid #800080;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.tuner-config {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+label {
+  color: #800080;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+select,
+input[type="range"] {
+  appearance: none;
+  background: #333;
+  height: 4px;
+  border-radius: 2px;
+}
+select {
+  padding: 5px;
+  border: 1px solid #800080;
+  color: #00ff00;
+  margin-bottom: 5px;
+}
+.speed-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+}
+.speed-control label {
+  color: #800080;
+  margin-right: 8px;
+}
+.speed-control input {
+  width: 200px;
+  margin: 0 10px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00ff00;
+}
+.note {
+  font-size: 3rem;
+  text-align: center;
+  color: #800080;
+  margin: 5px 0;
+}
+.note-check {
+  font-size: 1.5rem;
+  text-align: center;
+  color: #00ff00;
+  height: 1.5rem;
+}
+.btn {
+  background: #00ff00;
+  border: none;
+  color: #000;
+  padding: 10px 20px;
+  margin: 5px 0;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+  position: relative;
+}
+.btn-small {
+  background: #00ff00;
+  border: none;
+  color: #000;
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.hidden {
+  display: none;
+}
+.met-config {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.grid-3x3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.btn-rhythm {
+  background: #00ff00;
+  color: #000;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+#precision-indicator {
+  height: 4px;
+  width: 0;
+  transition: width 0.1s;
+  background: #333;
+  margin-top: 10px;
+}
+#metro-led-vertical-wrapper {
+  display: inline-block;
+  width: 2px;
+  height: 40px;
+  margin-left: 10px;
+  background: #333;
+  overflow: hidden;
+  position: relative;
+  vertical-align: middle;
+}
+#metro-led-vertical {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #ffa500;
+  transition: height 50ms linear;
+}
+@media (max-width: 480px) {
+  .grid-3x3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

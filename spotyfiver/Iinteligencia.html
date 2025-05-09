@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat de IA com Imagens</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #053505, #000000);
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .message {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 8px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+        }
+
+        .bot {
+            background-color: #e1e1e1;
+            color: black;
+            align-self: flex-start;
+        }
+
+        .bot img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            outline: none;
+        }
+
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin: 0;
+            padding: 0px;
+            background-color: #b5c7da;
+            border-bottom: px solid #ddd;
+        }
+
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+  
+    <div class="chat-container">
+        <h1>Chat Inteligência</h1>
+        <div class="chat-box"
+         id="chatBox"></div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "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"; // Substitua pela sua chave da OpenAI
+
+        // Enviar mensagem ao pressionar ENTER
+        document.getElementById("userInput").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput");
+            const message = userInput.value.trim();
+
+            if (message === "") return;
+
+            // Adicionar mensagem do usuário na tela
+            addMessage("user", message);
+            userInput.value = "";
+
+            // Verifica se a mensagem pede uma imagem
+            if (message.toLowerCase().startsWith("desenhe") || message.toLowerCase().startsWith("crie uma imagem de")) {
+                generateImage(message);
+            } else {
+                generateText(message);
+            }
+        }
+
+        async function generateText(message) {
+            try {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4", // Modelo usado para texto
+                        messages: [{ role: "user", content: message }]
+                    })
+                });
+
+                const data = await response.json();
+                const botMessage = data.choices?.[0]?.message?.content || "Erro ao obter resposta.";
+
+                addMessage("bot", botMessage);
+            } catch (error) {
+                addMessage("bot", "Erro ao se conectar com a IA.");
+                console.error("Erro:", error);
+            }
+        }
+
+        async function generateImage(prompt) {
+            try {
+                const response = await fetch("https://api.openai.com/v1/images/generations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "dall-e-3", // Modelo usado para imagens
+                        prompt: prompt,
+                        n: 1,
+                        size: "1024x1024"
+                    })
+                });
+
+                const data = await response.json();
+                const imageUrl = data.data?.[0]?.url;
+
+                if (imageUrl) {
+                    addImage("bot", imageUrl);
+                } else {
+                    addMessage("bot", "Erro ao gerar imagem.");
+                }
+            } catch (error) {
+                addMessage("bot", "Erro ao se conectar com a IA.");
+                console.error("Erro:", error);
+            }
+        }
+
+        function addMessage(sender, text) {
+            const chatBox = document.getElementById("chatBox");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+            messageDiv.textContent = text;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function addImage(sender, imageUrl) {
+            const chatBox = document.getElementById("chatBox");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = "Imagem gerada pela IA";
+
+            messageDiv.appendChild(img);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

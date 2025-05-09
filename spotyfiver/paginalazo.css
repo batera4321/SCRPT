@@ -1,0 +1,177 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121314;
+    color: white;
+}
+
+.container {
+    text-align: center;
+    padding: 0 15px;
+}
+
+.header {
+    background-image: url('lazar.png');
+    /* Adicione o caminho da imagem de fundo */
+    background-size: cover;
+    background-position: center;
+    padding: 50px 0;
+    position: relative;
+    /* Para posicionar elementos filhos */
+}
+
+h1 {
+    font-size: 3em;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.popular {
+    background-color: #032916;
+    padding: 20px;
+    text-align: left;
+    /* Alinha o texto à esquerda */
+    max-width: 1300px;
+    /* Define uma largura máxima */
+    margin: 0 auto;
+    /* Centraliza o conteúdo */
+    border-radius: 8px;
+    /* Bordas arredondadas */
+    background: linear-gradient(to bottom, #053505, #000000);
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    /* Espaço abaixo do título */
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    /* Define a largura da lista para 100% */
+}
+
+li {
+    margin: 10px 0;
+    font-size: 1.2em;
+    display: flex;
+    /* Usar flexbox para alinhar a imagem e o texto */
+    align-items: center;
+    /* Centraliza verticalmente */
+    transition: transform 0.3s, color 0.3s;
+    /* Animação suave para transformação e cor */
+    color: #e5e7e1;
+}
+
+li img {
+    width: 44px;
+    /* Tamanho da imagem */
+    height: 44px;
+    /* Tamanho da imagem */
+    margin-right: 10px;
+    /* Espaço entre a imagem e o texto */
+    
+   
+}
+
+/* Efeito ao passar o mouse */
+li:hover {
+    transform: scale(1.1);
+    /* Aumenta levemente o tamanho do item */
+    color: #a2f006;
+    /* Muda a cor do texto */
+}
+
+.ver-mais {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #0a9396;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.ver-mais:hover {
+    background-color: #94d2bd;
+}
+
+/* Estilo para logo e texto do Spotify */
+.spotify-container {
+    display: flex;
+    justify-content: space-between;
+    /* Espaça os itens */
+    padding: 25px 1px;
+    /* Espaço superior e inferior */
+    max-width: 1300px;
+    /* Largura máxima */
+    margin:  auto;
+    /* Centraliza o conteúdo */
+
+}
+
+
+.spotify-logo {
+    width: 30px; /* Tamanho do logo */
+    height: auto; /* Mantém a proporção */
+    position: absolute; /* Para posicionar o logo */
+    left: 15px; /* Alinhado à esquerda */
+    bottom: px; /* Ajuste conforme necessário */  
+}
+
+.spotify-logo1 {
+    width: 35px; /* Tamanho do logo */
+    height: auto; /* Mantém a proporção */
+    position: absolute; /* Para posicionar o logo */
+    left: px; /* Alinhado à esquerda */
+
+}
+.spotify-logo:hover {
+    transform: scale(1.1); /* Aumenta o tamanho do logo */
+    filter: brightness(0) saturate(100%) invert(26%) sepia(96%) saturate(300%) hue-rotate(164deg) brightness(102%) contrast(101%); /* Muda a cor do logo */
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5em;
+        /* Reduzir o tamanho do título para dispositivos menores */
+    }
+
+    h2 {
+        font-size: 1.5em;
+        /* Reduzir o tamanho do subtítulo */
+    }
+
+    li {
+        font-size: 1em;
+        /* Reduzir o tamanho do texto da lista */
+    }
+
+    .popular {
+        padding: 15px;
+        /* Reduzir o preenchimento
+         */
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2em;
+        /* Tamanho ainda menor para telas pequenas */
+    }
+
+    h2 {
+        font-size: 1.2em;
+        /* Ajustar o tamanho do subtítulo */
+    }
+
+    li {
+        font-size: 0.9em;
+        /* Ajustar o tamanho do texto da lista */
+    }
+}

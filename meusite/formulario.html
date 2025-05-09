@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Formulário de Serviço</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: blue;
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+      }
+
+      form {
+        background-color: #007bff;
+        padding: 30px;
+        border-radius: 10px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        color: #fff;
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin: 10px 0 5px;
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      .success-message {
+        display: none;
+        text-align: center;
+        color: #fff;
+        font-weight: bold;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <form
+      id="serviceForm"
+      action="https://formsubmit.co/danielbateram@gmail.com"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <h2>Cadastro de Serviço</h2>
+
+      <label for="nome">Nome do Cliente:</label>
+      <input type="text" id="nome" name="Nome do Cliente" required />
+
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="Email" required />
+
+      <label for="telefone">Telefone:</label>
+      <input type="tel" id="telefone" name="Telefone" required />
+
+      <label for="servico">Serviço Desejado:</label>
+      <select id="servico" name="Serviço Desejado" required>
+        <option value="" disabled selected>Selecione um serviço</option>
+        <option value="Troca de óleo">Troca de óleo</option>
+        <option value="Troca de correia">Troca de correia</option>
+        <option value="Troca peças">Troca peças</option>
+        <option value="Máquinas">Máquinas</option>
+      </select>
+
+      <label for="descricao">Descrição do Problema:</label>
+      <textarea
+        id="descricao"
+        name="Descrição do Problema"
+        rows="5"
+        required
+      ></textarea>
+
+      <label for="arquivo"
+        >Anexar Arquivo (imagem, PDF, Word, Excel, vídeo MP4):</label
+      >
+      <input
+        type="file"
+        id="arquivo"
+        name="arquivo"
+        accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.mp4"
+      />
+
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_next" value="javascript:void(0);" />
+
+      <button type="submit">Enviar</button>
+
+      <div class="success-message" id="successMessage">
+        Cadastro feito com sucesso!
+      </div>
+    </form>
+
+    <script>
+      const form = document.getElementById("serviceForm");
+      const successMessage = document.getElementById("successMessage");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: {
+            Accept: "application/json",
+          },
+        })
+          .then((response) => {
+            if (response.ok) {
+              form.reset();
+              successMessage.style.display = "block";
+            } else {
+              alert("Ocorreu um erro ao enviar. Tente novamente.");
+            }
+          })
+          .catch((error) => {
+            alert("Erro na conexão. Verifique sua internet.");
+          });
+      });
+    </script>
+  </body>
+</html>

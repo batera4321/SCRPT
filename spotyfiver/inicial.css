@@ -1,0 +1,128 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #0b0c0c;
+  color: #ffffff;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 4000px;
+  margin: auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  left: 100%;
+  margin-top: 0px;
+}
+
+.playlist {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.card {
+  background-color: #292828;
+  border-radius: 50%;
+  /* Formato redondo */
+  margin: 10px;
+  padding: 20px;
+  width: 150px;
+  /* Ajuste o tamanho geral do card */
+  height: 150px;
+  /* Ajuste o tamanho geral do card */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Centraliza o conteúdo */
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  /* Adiciona a transição */
+}
+
+.card:hover {
+  transform: scale(1.1);
+  /* Aumenta o tamanho do card ao passar o mouse */
+  background-color: #3a3a3a;
+  /* Muda a cor de fundo ao passar o mouse */
+}
+
+.card img {
+  width: 70%;
+  /* Ajuste a largura da imagem dentro do card */
+  border-radius: 50%;
+  /* Formato redondo para a imagem */
+  margin-top: 40px;
+}
+
+.card .img1 {
+  width: 80%;
+  /* Ajuste a largura da imagem dentro do card */
+  border-radius: 50%;
+  /* Formato redondo para a imagem */
+}
+
+.card h2 {
+  font-size: 1em;
+  /* Ajuste o tamanho do texto */
+  margin: 10px 0;
+}
+
+.card p {
+  font-size: 0.8em;
+  /* Ajuste o tamanho do texto */
+  color: #bbb;
+}
+
+.play-button {
+  width: 20px;
+  /* tamanho do botão */
+  height: 20px;
+  /* tamanho do botão */
+  background-color: green;
+  /* cor do botão */
+  border-radius: 50%;
+  /* forma redonda */
+  position: relative;
+  /* para posicionar a seta de play */
+  left: 0px;
+  /* distância do lado esquerdo */
+  top: -11px;
+  /* ajuste para a posição vertical */
+  display: flex;
+  /* para centralizar o ícone de play */
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  /* muda o cursor ao passar o mouse */
+  margin-top: px;
+}
+
+.play-button::before {
+  content: "";
+  /* conteúdo vazio para o ícone de play */
+  border-left: 10px solid rgb(41, 34, 34);
+  /* triângulo do play */
+  border-top: 5px solid transparent;
+  /* parte superior do triângulo */
+  border-bottom: 5px solid transparent;
+  /* parte inferior do triângulo */
+}
+
+.play-button:hover {
+  background-color: #3cb371;
+  /* muda para um verde mais claro ao passar o mouse */
+}
+
+.header-container {
+  background: linear-gradient(to bottom, #053505, #000000);
+  /* Cor de fundo da faixa branca */
+  padding: px;
+  /* Ajuste o espaçamento em cima e embaixo */
+  max-width: 2500px;
+  margin-top: 28px;
+}

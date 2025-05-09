@@ -1,0 +1,269 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  transition: background-color 0.5s;
+  font-family: Arial, sans-serif;
+  background-color: white;
+}
+header,
+nav,
+footer {
+  width: 100%;
+}
+header {
+  background-color: black;
+  color: white;
+  padding: 3rem 1rem 1rem;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  height: 300px;
+}
+.carousel {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  animation: slide 12s infinite;
+}
+.carousel img {
+  min-width: 100%;
+  object-fit: cover;
+}
+@keyframes slide {
+  0% {
+    transform: translateX(0%);
+  }
+  33.33% {
+    transform: translateX(-100%);
+  }
+  66.66% {
+    transform: translateX(-200%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+nav {
+  background-color: gray;
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  margin-top: 0.2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+nav .menu-item {
+  position: relative;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+nav .menu-item:hover {
+  background-color: orange;
+  animation: pulse 0.3s;
+}
+nav .submenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: gray;
+  flex-direction: column;
+  width: 150px;
+}
+nav .menu-item:hover .submenu {
+  display: flex;
+}
+nav .submenu div {
+  padding: 0.5rem;
+  transition: background-color 0.3s;
+}
+nav .submenu div:hover {
+  background-color: orange;
+  animation: pulse 0.3s;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+#menu-lateral {
+  width: 200px;
+  height: 500px;
+  background-color: gray;
+  color: white;
+  position: absolute;
+  top: 370px;
+  left: 0;
+  padding-top: 40px;
+  transition: transform 0.3s, background-color 0.3s;
+}
+#menu-lateral ul {
+  list-style: none;
+  padding: 0;
+}
+#menu-lateral li {
+  padding: 10px;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+#menu-lateral li:hover {
+  background-color: orange;
+  animation: pulse 0.3s;
+}
+#menu-lateral.escondido {
+  transform: translateX(-100%);
+}
+#btn-menu {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 999;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+#btn-menu div {
+  width: 30px;
+  height: 4px;
+  background: white;
+  margin: 5px 0;
+}
+.switch {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #2196f3;
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+main {
+  margin-left: 200px;
+  padding: 2rem;
+  transition: margin-left 0.3s;
+}
+#menu-lateral.escondido + main {
+  margin-left: 0;
+}
+footer {
+  background-color: black;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+  width: 100%;
+  position: relative;
+}
+footer button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  background-color: blue;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+footer button:active {
+  background-color: orange;
+  transform: scale(1.1);
+}
+form {
+  margin-top: 2rem;
+  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  gap: 1rem;
+}
+input[type="text"],
+input[type="number"] {
+  padding: 0.5rem;
+}
+form button[type="submit"] {
+  padding: 0.3rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  border: none;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  width: fit-content;
+}
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.video-grid iframe {
+  width: 100%;
+  height: 200px;
+  transition: transform 0.3s, background-color 0.3s;
+  border: 3px solid transparent;
+}
+.video-grid iframe:hover {
+  background-color: orange;
+  transform: scale(1.05);
+  border-color: orange;
+}
+.social-icons {
+  margin-top: 1rem;
+}
+.social-icons a {
+  color: white;
+  margin: 0 10px;
+  font-size: 1.5rem;
+  transition: color 0.3s, transform 0.3s;
+}
+.social-icons a:hover {
+  color: orange;
+  transform: scale(1.2);
+}

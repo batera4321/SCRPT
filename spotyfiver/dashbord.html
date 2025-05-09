@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Rendimento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+           
+            background: linear-gradient(to bottom, #af07c5, #0a0707);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .info-marquee {
+            background-color: #f1b009; /* Cor roxa da barra de informações */
+            color: rgb(13, 11, 14); /* Cor do texto */
+            padding: 10px; /* Espaço interno */
+            white-space: nowrap; /* Não quebrar a linha */
+            overflow: hidden; /* Oculta o conteúdo que ultrapassa */
+            position: relative; /* Relativo para o scrolling */
+            margin-bottom: 10px; /* Espaço abaixo da barra */
+        }
+
+        .info-content {
+            display: inline-block; /* Estilo em linha */
+            animation: marquee 15s linear infinite; /* Animação */
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(100%, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fcfbfd; /* Cor do fundo do container (grafite) */
+            padding: 20px; /* Espaçamento interno */
+            border-radius: 8px; /* Cantos arredondados */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra */
+        }
+
+        h1 {
+            text-align: center;
+            color: #d13232; /* Cor do texto do título */
+        }
+
+        .charts {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 350px; /* Largura do gráfico */
+            height: 400px; /* Altura do gráfico */
+        }
+
+        canvas {
+            border: 1px solid #f39090;
+            width: 100%; /* Para garantir o preenchimento completo */
+            height: 100%; /* Para garantir o preenchimento completo */
+        }
+
+        #resultado {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .percentage-label {
+            position: absolute;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px; /* Largura do círculo do rótulo */
+            height: 50px; /* Altura do círculo do rótulo */
+            border-radius: 50%; /* Círculo */
+            background: white; /* Fundo branco para melhor visibilidade */
+            color: black; /* Cor do texto */
+            font-weight: bold; /* Negrito */
+            margin: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centralizar */
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="info-marquee">
+        <div class="info-content">
+            Informação 1: O rendimento total do mês é de R$ 200,00 | Informação 2: O lucro acumulado é de R$ 500,00 | Informação 3: Pré-visualize suas estatísticas mensais.
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Dashboard de Rendimento</h1>
+        
+        
+        <div class="charts">
+            <div class="chart-container">
+                <canvas id="rendimentoPizza"></canvas>
+                <div class="percentage-label" id="rendimentoPorcentagem"></div>
+            </div>
+            <div class="chart-container">
+                <canvas id="lucroPizza"></canvas>
+                <div class="percentage-label" id="lucroPorcentagem"></div>
+            </div>
+        </div>
+
+        <div id="resultado">
+            <canvas id="rendimentoBarra"></canvas>
+        </div>
+
+        <div id="ondaEstatisticas">
+            <canvas id="ondasEstatisticas"></canvas>
+        </div>
+
+        <div id="resultado">
+            <p id="melhorMesa"></p>
+            <p id="piorMesa"></p>
+        </div>
+    </div>
+
+    <script>
+        // Dados de exemplo
+        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho'];
+        const rendimentos = [200, 150, 300, 250, 400, 350];
+        const custo = 800; // Custo total fictício para o cálculo de lucro
+
+        const totalRendimento = rendimentos.reduce((a, b) => a + b, 0);
+        const lucro = totalRendimento - custo; // Cálculo do lucro
+        const lucroPorcentagem = ((lucro / totalRendimento) * 100).toFixed(2); // Porcentagem de lucro
+        const rendimentoPorcentagem = ((totalRendimento / 1000) * 100).toFixed(2); // Porcentagem do rendimento total
+        const maxRendimento = Math.max(...rendimentos);
+        const minRendimento = Math.min(...rendimentos);
+        const melhorMes = meses[rendimentos.indexOf(maxRendimento)];
+        const piorMes = meses[rendimentos.indexOf(minRendimento)];
+        
+        // Gráfico dePizza - Rendimento
+        const ctxPizza = document.getElementById('rendimentoPizza').getContext('2d');
+        const rendimentoPizza = new Chart(ctxPizza, {
+            type: 'doughnut',
+            data: {
+                labels: ['Rendimento Total', 'Rendimento Restante'],
+                datasets: [{
+                    label: 'Porcentagem do Rendimento',
+                    data: [totalRendimento, 1000 - totalRendimento],
+                    backgroundColor: ['#6A1B9A', '#FF6384'], // Roxo e vermelho
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Porcentagem do Rendimento Total'
+                    }
+                }
+            }
+        });
+
+        // Porcentagem de rendimento
+        document.getElementById('rendimentoPorcentagem').innerText = `${rendimentoPorcentagem}%`;
+
+        // Gráfico de Pizza - Lucro
+        const ctxLucro = document.getElementById('lucroPizza').getContext('2d');
+        const lucroPizza = new Chart(ctxLucro, {
+            type: 'doughnut',
+            data: {
+                labels: ['Lucro', 'Prejuízo'],
+                datasets: [{
+                    label: 'Porcentagem de Lucro',
+                    data: [lucro, custo],
+                    backgroundColor: ['#4CAF50', '#FF6347'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Porcentagem de Lucro'
+                    }
+                }
+            }
+        });
+
+        // Porcentagem de lucro
+        document.getElementById('lucroPorcentagem').innerText = `${lucroPorcentagem}%`;
+
+        // Gráfico de Barras
+        const ctxBarra = document.getElementById('rendimentoBarra').getContext('2d');
+        const rendimentoBarra = new Chart(ctxBarra, {
+            type: 'bar',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Rendimento por Mês',
+                    data: rendimentos,
+                    backgroundColor: 'rgba(0, 0, 128, 0.6)', // Azul escuro
+                    hoverBackgroundColor: 'rgba(0, 0, 255, 0.8)', // Azul mais claro ao hover
+                    borderColor: 'rgba(0, 0, 128, 1)', // Azul escuro
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Rendimento por Mês'
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Ondas
+        const ctxOndas = document.getElementById('ondasEstatisticas').getContext('2d');
+        const ondasEstatisticas = new Chart(ctxOndas, {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Estatísticas',
+                    data: [50, 60, 70, 80, 65, 85], // Dados fictícios para as ondas
+                    fill: true,
+                    backgroundColor: 'rgba(128, 0, 128, 0.2)', // Cor de fundo roxa
+                    borderColor: 'rgba(128, 0, 128, 1)', // Cor da linha roxa
+                    tension: 0.3 // Suaviza a linha
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                    title: {
+                        display: true,
+                        text: 'Estatísticas em Forma de Ondas'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Exibir o melhor e o pior mês
+        document.getElementById('melhorMesa').innerText = `Mês com maior rendimento: ${melhorMes}`;
+        document.getElementById('piorMesa').innerText = `Mês com menor rendimento: ${piorMes}`;
+    </script>
+</body>
+</html>

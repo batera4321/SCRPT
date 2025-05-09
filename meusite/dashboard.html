@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Vendas</title>
+    <style>
+      :root {
+        --bg-color: #f0f2f5;
+        --header-bg: purple;
+        --marquee-color: red;
+      }
+      .bar-title,
+      .line-title,
+      .circle-title,
+      .wave-title {
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+        margin-top: 10px;
+        background-color: #002366;
+        color: white;
+        padding: 8px;
+        border-radius: 4px;
+      }
+
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-color);
+      }
+
+      header {
+        background-color: var(--header-bg);
+        height: 90px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+      }
+
+      .marquee {
+        color: var(--marquee-color);
+        font-size: 26px;
+        font-weight: bold;
+        white-space: nowrap;
+        padding-left: 100%;
+        animation: marquee 20s linear infinite;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      .theme-buttons,
+      .year-buttons {
+        text-align: center;
+        margin: 20px;
+      }
+
+      .theme-buttons button,
+      .year-buttons button {
+        background-color: darkblue;
+        color: white;
+        font-weight: bold;
+        border: none;
+        padding: 10px 20px;
+        margin: 0 10px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .inputs {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin: 20px;
+        flex-wrap: wrap;
+      }
+
+      .inputs input {
+        padding: 10px;
+        width: 220px;
+        font-size: 18px;
+        font-weight: bold;
+        color: darkblue;
+        background-color: #add8e6;
+        border: 2px solid black;
+      }
+
+      body.dark-mode .inputs input {
+        border-color: blue;
+      }
+
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .dashboard > div {
+        background-color: transparent;
+        height: 400px;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        cursor: pointer;
+      }
+
+      .dashboard > div:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      }
+
+      canvas {
+        background: #fff;
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      #pizzaCenterText {
+        font-size: 60px;
+        font-weight: bold;
+        color: darkblue;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+      }
+
+      .rotate-chart {
+        animation: rotate 30s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="marquee" id="marquee">
+        Relatório de Vendas: Produtos, Quantidade, Valores, Desempenho Mensal e
+        Muito Mais
+      </div>
+    </header>
+
+    <div class="theme-buttons">
+      <button onclick="changeTheme('light')">Claro</button>
+      <button onclick="changeTheme('dark')">Escuro</button>
+      <button onclick="changeTheme('blue')">Azul</button>
+    </div>
+
+    <div class="year-buttons">
+      <button onclick="atualizarGraficos(2011)">2011</button>
+      <button onclick="atualizarGraficos(2020)">2020</button>
+      <button onclick="atualizarGraficos(2025)">2025</button>
+    </div>
+
+    <div class="inputs">
+      <input
+        type="text"
+        id="valorColuna"
+        placeholder="Vendas por Mês"
+        readonly
+      />
+      <input
+        type="text"
+        id="valorLinha"
+        placeholder="Vendas por Trimestre"
+        readonly
+      />
+      <input
+        type="text"
+        id="valorPizza"
+        placeholder="Porcentagem da Venda"
+        readonly
+      />
+      <input
+        type="text"
+        id="vendedorDestaque"
+        placeholder="Vendedor Destaque e Valor"
+        readonly
+      />
+    </div>
+
+    <div class="dashboard">
+      <div onclick="animateDashboard(this)" onKeyDown="animateDashboard(this)">
+        <div class="bar-title">Vendas por Mês</div>
+        <canvas id="barChart"></canvas>
+      </div>
+
+      <div onclick="animateDashboard(this)" onKeyDown="animateDashboard(this)">
+        <div class="line-title">Vendas por Trimestre</div>
+        <canvas id="lineChart"></canvas>
+      </div>
+
+      <div onclick="animateDashboard(this)" onKeyDown="animateDashboard(this)">
+        <div class="circle-title">Porcentagem de Vendas</div>
+        <div style="position: relative; height: 100%; border-radius: 50%">
+          <canvas
+            id="pizzaChart"
+            class="rotate-chart"
+            style="background: transparent"
+          ></canvas>
+          <div id="pizzaCenterText">0%</div>
+        </div>
+      </div>
+
+      <div onclick="animateDashboard(this)" onKeyDown="animateDashboard(this)">
+        <div class="wave-title">Destaques Mensais - Vendedores</div>
+        <canvas id="waveChart"></canvas>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const dadosPorAno = {
+        2011: [
+          1200, 1500, 1700, 1400, 1650, 2000, 2100, 1900, 2300, 2200, 2100,
+          2500,
+        ],
+        2020: [
+          3100, 3300, 2900, 3700, 4000, 4200, 4300, 4100, 4600, 4700, 4900,
+          5100,
+        ],
+        2025: [
+          5200, 5600, 5900, 6100, 6300, 6500, 6700, 7000, 7200, 7400, 7600,
+          8000,
+        ],
+      };
+
+      const meses = [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Abr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Set",
+        "Out",
+        "Nov",
+        "Dez",
+      ];
+      const vendedores = [
+        "Carlos",
+        "Juliana",
+        "Roberto",
+        "Fernanda",
+        "Lucas",
+        "Patrícia",
+        "Ricardo",
+        "Mariana",
+        "André",
+        "Bianca",
+        "Felipe",
+        "Tatiane",
+      ];
+
+      let barChart, lineChart, pizzaChart, waveChart;
+
+      const ctxBar = document.getElementById("barChart").getContext("2d");
+      const ctxLine = document.getElementById("lineChart").getContext("2d");
+      const ctxPizza = document.getElementById("pizzaChart").getContext("2d");
+      const ctxWave = document.getElementById("waveChart").getContext("2d");
+      const pizzaCenterText = document.getElementById("pizzaCenterText");
+
+      function atualizarGraficos(ano) {
+        const vendasMes = dadosPorAno[ano];
+        if (barChart) barChart.destroy();
+        if (lineChart) lineChart.destroy();
+        if (pizzaChart) pizzaChart.destroy();
+        if (waveChart) waveChart.destroy();
+
+        const desempenho = vendasMes.map(
+          (v) => v * (0.8 + Math.random() * 0.4)
+        );
+        let maxIndex = desempenho.indexOf(Math.max(...desempenho));
+        document.getElementById("vendedorDestaque").value = `${
+          vendedores[maxIndex]
+        } - R$ ${desempenho[maxIndex].toFixed(2)}`;
+
+        barChart = new Chart(ctxBar, {
+          type: "bar",
+          data: {
+            labels: meses,
+            datasets: [
+              {
+                label: `Vendas em ${ano}`,
+                data: vendasMes,
+                backgroundColor: meses.map(() => "rgba(75, 192, 192, 0.5)"),
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            onClick: (e, elements) => {
+              if (elements.length > 0) {
+                const idx = elements[0].index;
+                document.getElementById(
+                  "valorColuna"
+                ).value = `Mês: ${meses[idx]} - R$ ${vendasMes[idx]}`;
+                e.chart.data.datasets[0].backgroundColor[idx] = "red";
+                e.chart.update();
+              }
+            },
+          },
+        });
+
+        lineChart = new Chart(ctxLine, {
+          type: "line",
+          data: {
+            labels: ["1º Trim", "2º Trim", "3º Trim", "4º Trim"],
+            datasets: [
+              {
+                label: `Ganhos por Trimestre (${ano})`,
+                data: [
+                  vendasMes.slice(0, 3).reduce((a, b) => a + b, 0),
+                  vendasMes.slice(3, 6).reduce((a, b) => a + b, 0),
+                  vendasMes.slice(6, 9).reduce((a, b) => a + b, 0),
+                  vendasMes.slice(9, 12).reduce((a, b) => a + b, 0),
+                ],
+                fill: false,
+                borderColor: "blue",
+                tension: 0.1,
+              },
+            ],
+          },
+          options: {
+            onClick: (e, elements) => {
+              if (elements.length > 0) {
+                const idx = elements[0].index;
+                document.getElementById("valorLinha").value = `Trimestre ${
+                  idx + 1
+                } - R$ ${e.chart.data.datasets[0].data[idx]}`;
+              }
+            },
+          },
+        });
+
+        const total = vendasMes.reduce((a, b) => a + b, 0);
+
+        pizzaChart = new Chart(ctxPizza, {
+          type: "doughnut",
+          data: {
+            labels: meses,
+            datasets: [
+              {
+                data: vendasMes,
+                backgroundColor: meses.map(
+                  () => `hsl(${Math.random() * 360}, 70%, 60%)`
+                ),
+              },
+            ],
+          },
+          options: {
+            cutout: "70%",
+            plugins: {
+              legend: { display: false },
+            },
+            onClick: (e, elements) => {
+              if (elements.length > 0) {
+                const idx = elements[0].index;
+                const pct = ((vendasMes[idx] / total) * 100).toFixed(1);
+                pizzaCenterText.textContent = `${pct}%`;
+                document.getElementById("valorPizza").value = `${pct}%`;
+              }
+            },
+          },
+        });
+
+        waveChart = new Chart(ctxWave, {
+          type: "line",
+          data: {
+            labels: vendedores,
+            datasets: [
+              {
+                label: "Desempenho Mensal",
+                data: desempenho,
+                borderColor: "lightskyblue",
+                backgroundColor: "rgba(173, 216, 230, 0.2)",
+                fill: true,
+                tension: 0.5,
+                pointBackgroundColor: "lightskyblue",
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (val) => `R$ ${val}`,
+                },
+              },
+            },
+          },
+        });
+      }
+
+      atualizarGraficos(2025);
+
+      function changeTheme(theme) {
+        const root = document.documentElement;
+        document.body.classList.remove("dark-mode");
+
+        if (theme === "dark") {
+          root.style.setProperty("--bg-color", "#111");
+          root.style.setProperty("--header-bg", "orange");
+          root.style.setProperty("--marquee-color", "darkblue");
+          document.body.classList.add("dark-mode");
+        } else if (theme === "light") {
+          root.style.setProperty("--bg-color", "#fff");
+          root.style.setProperty("--header-bg", "purple");
+          root.style.setProperty("--marquee-color", "red");
+        } else if (theme === "blue") {
+          root.style.setProperty("--bg-color", "#e0f0ff");
+          root.style.setProperty("--header-bg", "orange");
+          root.style.setProperty("--marquee-color", "darkblue");
+        }
+      }
+
+      function animateDashboard(el) {
+        el.style.transition = "transform 0.4s ease, box-shadow 0.4s ease";
+        el.style.transform = "scale(1.05)";
+        el.style.boxShadow = "0 0 20px rgba(0,0,0,0.2)";
+        setTimeout(() => {
+          el.style.transform = "";
+          el.style.boxShadow = "";
+        }, 400);
+      }
+    </script>
+  </body>
+</html>

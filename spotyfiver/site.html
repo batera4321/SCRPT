@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Site</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #779abd, #e9ecef);
+            min-height: 100vh; /* Altura mínima da viewport */
+            display: flex;
+            flex-direction: column; /* Flexbox para estruturar o layout */
+        }
+        header {
+            background-color: green;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        nav.top-nav {
+            background-color: rgb(14, 13, 13);
+            color: white;
+            padding: 10px;
+            width: 100%;
+            position: relative;
+            display: flex; /* Usando flexbox para itens em linha */
+            align-items: center; /* Alinha os itens verticalmente */
+            margin-top: 10px; /* Espaçamento entre o header e o nav superior */
+        }
+        .menu-button {
+            background: none;
+            border: none;
+            color: rgb(233, 226, 226);
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px; /* Espaçamento à direita do botão */
+            display: flex;
+            flex-direction: column; /* Alinha os traços verticalmente */
+            justify-content: center; /* Centraliza verticalmente */
+            height: 40px; /* Altura do botão */
+            
+        }
+        .menu-button:hover {
+            background-color: #dfe5ee; /* Muda para branco ao passar o mouse */
+        }
+        .bar {
+            width: 30px; /* Largura dos traços */
+            height: 4px; /* Altura dos traços */
+            background-color: rgb(243, 238, 238); /* Cor dos traços */
+            margin: 3px 0; /* Espaçamento entre os traços */
+        }
+        .nav-items {
+            display: flex; /* Alinha os itens do nav horizontalmente */
+            flex-grow: 1; /* Permite que os itens do nav ocupem o espaço disponível */
+        }
+        nav.left-nav {
+            background-color: rgb(17, 16, 16);
+            color: white;
+            width: 150px; /* Largura do nav lateral */
+            height: 350px;
+            position: fixed;
+            top: 180px; /* Ajuste para o header + nav superior */
+            left: -220px; /* Escondido à esquerda */
+            transition: left 0.8s ease;
+            padding: 10px;
+            display: flex; /* Usando flexbox para organização vertical */
+            flex-direction: column; /* Itens organizados na vertical */
+        }
+        nav.left-nav a {
+            color: rgb(248, 247, 247);
+            text-decoration: none;
+            margin: 5px 0; /* Pequeno espaçamento vertical entre itens */
+            padding: 5px; /* Espaçamento interno */
+            transition: background-color 0.3s; /* Transição suave de cor de fundo */
+        }
+        nav.left-nav a:hover {
+            background-color: darkgray; /* Cor de fundo ao passar o mouse */
+        }
+        nav.top-nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px; /* Aumenta o espaçamento horizontal */
+            padding: 10px; /* Adiciona espaçamento interno */
+            transition: background-color 0.3s, color 0.3s; /* Transição ao passar o mouse */
+        }
+        nav.top-nav a:hover {
+            background-color: white; /* Muda a cor de fundo ao passar o mouse */
+            color: black; /* Muda a cor do texto ao passar o mouse */
+        }
+        .content {
+            margin-left: 220px; /* Espaço para o nav lateral */
+            padding: 20px;
+            flex: 1; /* O conteúdo ocupa o espaço disponível */
+        }
+        footer {
+            background-color: black;
+            color: rgb(224, 215, 215);
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+        }
+        .sub-items {
+            display: none; /* Inicialmente oculto */
+            padding: 10px; /* Espaçamento interno dos subitens */
+            background-color: rgb(12, 11, 11); /* Cor de fundo dos subitens */
+            position: absolute; /* Permite que fiquem sobre outros elementos */
+            z-index: 1; /* Garante que os subitens fiquem acima de outros */
+            margin-top: 5px; /* Margem acima dos subitens */
+        }
+        .sub-items a {
+            display: block; /* Exibe os subitens em bloco vertical */
+            margin: 5px 0; /* Espaçamento entre os subitens */
+            padding: 5px; /* Espaçamento interno dos subitens */
+            transition: background-color 0.3s; /* Transição suave de cor de fundo */
+        }
+        .sub-items a:hover {
+            background-color: white; /* Muda a cor de fundo ao passar o mouse */
+            color: black; /* Altera a cor do texto ao passar o mouse */
+        }
+        /* Estilo do botão Voltar ao Topo */
+        .scroll-to-top {
+            background-color: green;
+            color: rgb(80, 97, 19);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            position: fixed; /* Fixo na tela */
+            bottom: 30px; /* Distância do fundo */
+            right: 70px; /* Distância da lateral direita */
+            display: none; /* Inicialmente escondido */
+        }
+        .scroll-to-top:hover {
+            background-color: rgb(241, 247, 241); /* Torna o fundo mais escuro ao passar o mouse */
+        }
+
+        nav.left-nav button {
+        display: block;
+        width: 100%;
+        background: none;
+        border: none;
+        color: white;
+        text-align: left;
+        padding: 15px;
+        margin: 5px 0;
+        font-size: 16px;
+        cursor: pointer;
+        transition: color 0.3s ease, opacity 0.3s ease;
+    }
+
+    nav.left-nav button:hover {
+        color: gray;
+        opacity: 0.6;
+    }
+         /* Responsividade */
+         @media (max-width: 768px) {
+            .content {
+                margin-left: 0; 
+                padding: 10px; 
+            }
+            nav.left-nav {
+                left: -100%; 
+                width: 40%; 
+            }
+            nav.top-nav {
+                flex-direction: column; 
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .menu-button {
+                margin-right: 0; 
+            }
+            .bar {
+                width: 25px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Meu Site</h1>
+</header>
+
+<nav class="top-nav" aria-label="Main Navigation">
+    <button class="menu-button" id="toggleNav">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </button>
+    <div class="nav-items">
+        <div style="position: relative;">
+           
+            <a href="#" class="nav-item" 
+               onmouseenter="showSubItems('subItems1')" 
+               onmouseleave="hideSubItems
+               
+               ('subItems1')">Item 1</a>
+            <div id="subItems1" class="sub-items" 
+                 onmouseenter="showSubItems('subItems1')" 
+                 onmouseleave="hideSubItems('subItems1')">
+                <a href="inicial.html">Sub Item 1A</a>
+                <a href="dashbord.html">Sub Item 1B</a>
+            </div>
+        </div>
+        <div style="position: relative;">
+            <a href="#" class="nav-item" 
+               onmouseenter="showSubItems('subItems2')" 
+               onmouseleave="hideSubItems
+               
+               ('subItems2')">Item 2</a>
+            <div id="subItems2" class="sub-items" 
+                 onmouseenter="showSubItems('subItems2')" 
+                 onmouseleave="hideSubItems('subItems2')">
+                <a href="Iinteligencia.html">Sub Item 2A</a>
+                <a href="#">Sub Item 2B</a>
+            </div>
+        </div>
+        <div style="position: relative;">
+            <a href="#" class="nav-item" 
+               onmouseenter="showSubItems('subItems3')" 
+               onmouseleave="hideSubItems
+               
+               ('subItems3')">Item 3</a>
+            <div id="subItems3" class="sub-items" 
+                 onmouseenter="showSubItems('subItems3')" 
+                 onmouseleave="hideSubItems('subItems3')">
+                <a href="#">Sub Item 3A</a>
+                <a href="#">Sub Item 3B</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <p>Bem-vindo ao meu site! Explore os itens de navegação.</p>
+</div>
+
+<nav class="left-nav" id="leftNav" aria-label="Side Navigation">
+    
+    <button onclick="toggleTab('leftTab1')">Left Item 1</button>
+    <div id="leftTab1" class="sub-items" onmouseleave="hideSubItems('leftTab1')">
+       
+        <a href="#">Sub Item 1A</a>
+        <a href="#">Sub Item 1B</a>
+    </div>
+   
+    <button onclick="toggleTab('leftTab2')">Left Item 2</button>
+    <div id="leftTab2" class="sub-items" onmouseleave="hideSubItems('leftTab2')">
+        <a href="#">Sub Item 2A</a>
+        <a href="#">Sub Item 2B</a>
+    </div>
+   
+    <button onclick="toggleTab('leftTab3')">Left Item 3</button>
+    <div id="leftTab3" class="sub-items" onmouseleave="hideSubItems('leftTab3')">
+        <a href="">Sub Item 3A</a>
+        <a href="#">Sub Item 3B</a>
+    </div>
+</nav>
+
+<!-- Botão para Voltar ao Topo -->
+<button class="scroll-to-top" id="scrollToTopBtn" onclick="scrollToTop()">Voltar ao Topo   
+</button>
+
+<footer>
+    <p>Meu Rodapé &copy; 2023</p>
+</footer>
+
+</style>
+
+<script>
+    document.getElementById('toggleNav').addEventListener('click', function() {
+        const leftNav = document.getElementById('leftNav');
+        leftNav.style.left = leftNav.style.left === '0px' ? '-220px' : '0px'; // Alterna a visibilidade
+    });
+
+    function showSubItems(subItemId) {
+        const subItems = document.getElementById(subItemId);
+        subItems.style.display = 'block'; // Exibe os subitens
+    }
+
+    function hideSubItems(subItemId) {
+        const subItems = document.getElementById(subItemId);
+        subItems.style.display = 'none'; // Oculta os subitens
+    }
+
+    function toggleTab(tabId) {
+        const tab = document.getElementById(tabId);
+        tab.style.display = tab.style.display === 'block' ? 'none' : 'block'; // Alterna a visibilidade da aba
+    }
+
+    function hideLeftNav() {
+        const leftNav = document.getElementById('leftNav');
+        leftNav.style.left = '-220px'; // Oculta o nav lateral
+    }
+
+    // Adiciona eventos para esconder automaticamente o menu lateral quando o mouse sair dele
+    const leftNav = document.getElementById('leftNav');
+    leftNav.addEventListener('mouseenter', function() {
+        leftNav.style.left = '0px'; // Mostra o menu quando o mouse entra
+    });
+    leftNav.addEventListener('mouseleave', function() {
+        leftNav.style.left = '-220px'; // Esconde o menu quando o mouse sai
+    });
+
+    // Função para voltar ao topo da página
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Rolagem suave
+        });
+    }
+
+    // Mostra o botão quando rola a página
+    window.onscroll = function() {
+        const button = document.getElementById("scrollToTopBtn");
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            button.style.display = "block"; // Exibe o botão
+        } else {
+            button.style.display = "none"; // Oculta o botão
+        }
+    };
+</script>
+
+
+</body>
+</html>
