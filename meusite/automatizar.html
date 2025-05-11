@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Importação Automática de Excel</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        color: #000;
+        margin: 0;
+        padding: 30px;
+      }
+      .container {
+        width: 90%;
+        max-width: 1400px;
+        margin: auto;
+        background: #111;
+        padding: 30px;
+        border-radius: 8px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 2.5rem;
+        color: orange;
+      }
+      .controls,
+      .actions {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .controls input,
+      .controls label {
+        display: inline-block;
+        margin: 10px 15px;
+        background: #000;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 12px 20px;
+      }
+      #btn-import,
+      #btn-stop,
+      #btn-pdf,
+      #btn-clear,
+      #btn-dashboard,
+      #year-buttons button {
+        background: #800080;
+        color: #fff;
+        border: 1px solid #5e005e;
+        border-radius: 6px;
+        padding: 12px 20px;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+      #btn-import:hover,
+      #btn-stop:hover,
+      #btn-pdf:hover,
+      #btn-clear:hover,
+      #btn-dashboard:hover,
+      #year-buttons button:hover {
+        background-color: #a000a0;
+        transform: scale(1.1);
+      }
+      #charts {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+      }
+      .chart-box {
+        flex: 1 1 30%;
+        margin: 10px;
+        transition: transform 0.3s ease;
+      }
+      .chart-box:hover {
+        transform: scale(1.05);
+      }
+      .chart-box canvas {
+        background: #fff;
+        width: 100%;
+        height: 400px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        background: #fff;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 12px 15px;
+        color: #000;
+      }
+      th {
+        background: #eaeaea;
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      #status {
+        color: orange;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.3s;
+      }
+      #overlay.active {
+        visibility: visible;
+        opacity: 1;
+      }
+      .progress-container {
+        background: #222;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+      }
+      progress {
+        width: 100%;
+        height: 20px;
+      }
+      #dashboard {
+        display: none;
+        background: #222;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      #marquee {
+        background: orange;
+        color: #000;
+        padding: 10px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+      #marquee p {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 10s linear infinite;
+        margin: 0;
+      }
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+      #stats-header {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+        gap: 20px;
+      }
+      .stat-box {
+        background: #333;
+        padding: 20px;
+        border-radius: 6px;
+        width: 30%;
+      }
+      .stat-box h3 {
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .stat-box p {
+        color: #0f0;
+        font-size: 1.2rem;
+        margin: 0;
+      }
+      #year-buttons {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      #dashboard-footer {
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Importação Automática de Excel</h1>
+      <div class="controls">
+        <label for="input-excel">Arquivo Excel:</label>
+        <input type="file" id="input-excel" accept=".xlsx,.xls" />
+        <label for="speed-range"
+          >Velocidade (ms/célula): <span id="speed-value">500</span> ms</label
+        >
+        <input
+          type="range"
+          id="speed-range"
+          min="50"
+          max="2000"
+          step="50"
+          value="500"
+        />
+        <label for="stop-range">Linhas (ex: 3-5):</label>
+        <input type="text" id="stop-range" placeholder="3-5 ou até 5" />
+        <button id="btn-import">Iniciar</button>
+        <button id="btn-stop" disabled>Parar</button>
+      </div>
+      <div id="status">Nenhum arquivo carregado.</div>
+      <table id="tabela-dados">
+        <thead id="cabecalho"></thead>
+        <tbody id="corpo"></tbody>
+      </table>
+      <div class="actions">
+        <button id="btn-pdf" disabled>Salvar PDF</button>
+        <button id="btn-clear" disabled>Limpar</button>
+        <button id="btn-dashboard" disabled>Dashboard</button>
+      </div>
+      <div id="dashboard">
+        <div id="marquee"><p id="marquee-text"></p></div>
+        <div id="stats-header">
+          <div class="stat-box">
+            <h3>Total Vendas</h3>
+            <p id="stat-total-sales">0</p>
+          </div>
+          <div class="stat-box">
+            <h3>Total Quantidade</h3>
+            <p id="stat-total-qty">0</p>
+          </div>
+          <div class="stat-box">
+            <h3>Total Ganho</h3>
+            <p id="stat-total-gain">0</p>
+          </div>
+        </div>
+        <div id="year-buttons">
+          <button data-year="2020">2020</button>
+          <button data-year="2021">2021</button>
+          <button data-year="2022">2022</button>
+          <button data-year="2023">2023</button>
+        </div>
+        <div id="charts">
+          <div class="chart-box"><canvas id="chart-value"></canvas></div>
+          <div class="chart-box"><canvas id="chart-quantity"></canvas></div>
+          <div class="chart-box"><canvas id="chart-gain"></canvas></div>
+        </div>
+        <div id="dashboard-footer">
+          <button id="btn-dashboard-pdf">Salvar Dashboard em PDF</button>
+        </div>
+      </div>
+    </div>
+    <div id="overlay">
+      <div class="progress-container">
+        <p>Gerando PDF...</p>
+        <progress id="pdf-progress" max="100" value="0"></progress>
+      </div>
+    </div>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      const inputExcel = document.getElementById("input-excel");
+      const status = document.getElementById("status");
+      const cabecalho = document.getElementById("cabecalho");
+      const corpo = document.getElementById("corpo");
+      const speedRange = document.getElementById("speed-range");
+      const speedValue = document.getElementById("speed-value");
+      const stopRangeInput = document.getElementById("stop-range");
+      const btnImport = document.getElementById("btn-import");
+      const btnStop = document.getElementById("btn-stop");
+      const btnPdf = document.getElementById("btn-pdf");
+      const btnClear = document.getElementById("btn-clear");
+      const btnDashboard = document.getElementById("btn-dashboard");
+      const dashPdf = document.getElementById("btn-dashboard-pdf");
+      const overlay = document.getElementById("overlay");
+      const pdfProgress = document.getElementById("pdf-progress");
+      const dashboard = document.getElementById("dashboard");
+      let stopRequested = false,
+        workbookJson = null;
+      speedRange.addEventListener(
+        "input",
+        () => (speedValue.textContent = speedRange.value)
+      );
+      inputExcel.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        status.textContent = "Carregando arquivo...";
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        workbookJson = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        status.textContent = "Arquivo pronto.";
+        btnImport.disabled = false;
+      });
+      const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+      async function startImport() {
+        if (!workbookJson) return;
+        stopRequested = false;
+        cabecalho.innerHTML = "";
+        corpo.innerHTML = "";
+        btnStop.disabled = false;
+        btnPdf.disabled = true;
+        btnClear.disabled = true;
+        btnDashboard.disabled = true;
+        const header = workbookJson[0],
+          headRow = document.createElement("tr");
+        header.forEach((col) => {
+          const th = document.createElement("th");
+          th.textContent = col;
+          headRow.appendChild(th);
+        });
+        cabecalho.appendChild(headRow);
+        let start = 1,
+          end = workbookJson.length - 1;
+        const val = stopRangeInput.value.trim();
+        if (val.includes("-")) {
+          const p = val.split("-").map((n) => parseInt(n));
+          if (p[0] <= p[1]) {
+            start = p[0];
+            end = p[1];
+          }
+        } else if (val) {
+          const n = parseInt(val);
+          if (!isNaN(n)) end = n;
+        }
+        for (let i = start; i <= end; i++) {
+          if (stopRequested) break;
+          const row = workbookJson[i],
+            tr = document.createElement("tr");
+          corpo.appendChild(tr);
+          row.forEach((c) => {
+            const td = document.createElement("td");
+            td.textContent = c;
+            tr.appendChild(td);
+          });
+          status.textContent = `Importando linha ${i}`;
+          await delay(parseInt(speedRange.value));
+        }
+        btnStop.disabled = true;
+        status.textContent = "Concluído.";
+        btnPdf.disabled = false;
+        btnClear.disabled = false;
+        btnDashboard.disabled = false;
+      }
+      btnImport.onclick = startImport;
+      btnStop.onclick = () => (stopRequested = true);
+      btnPdf.onclick = async () => {
+        overlay.classList.add("active");
+        pdfProgress.value = 0;
+        const canvas = await html2canvas(corpo);
+        pdfProgress.value = 50;
+        const img = canvas.toDataURL();
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: "landscape" });
+        const p = pdf.getImageProperties(img);
+        const w = pdf.internal.pageSize.getWidth(),
+          h = (p.height * w) / p.width;
+        pdf.addImage(img, "PNG", 0, 10, w, h);
+        pdfProgress.value = 100;
+        pdf.save("tabela-dados.pdf");
+        setTimeout(() => overlay.classList.remove("active"), 300);
+      };
+      btnClear.onclick = () => {
+        cabecalho.innerHTML = "";
+        corpo.innerHTML = "";
+        status.textContent = "Tabela limpa.";
+        btnClear.disabled = true;
+        btnPdf.disabled = true;
+        btnDashboard.disabled = true;
+        dashboard.style.display = "none";
+      };
+      function renderDashboard(rows) {
+        const values = rows.map((r) => parseFloat(r[2]) || 0);
+        const qty = rows.map((r) => parseFloat(r[3]) || 0);
+        const gain = rows.map((r) => parseFloat(r[4]) || 0);
+        const totalSales = values.reduce((a, b) => a + b, 0).toFixed(2);
+        const totalQty = qty.reduce((a, b) => a + b, 0);
+        const totalGain = gain.reduce((a, b) => a + b, 0).toFixed(2);
+        document.getElementById("stat-total-sales").textContent = totalSales;
+        document.getElementById("stat-total-qty").textContent = totalQty;
+        document.getElementById("stat-total-gain").textContent = totalGain;
+        const labels = rows.map((r) => r[1]);
+        ["chart-value", "chart-quantity", "chart-gain"].forEach((id) => {
+          const ctx = document.getElementById(id).getContext("2d");
+          if (ctx.chart) ctx.chart.destroy();
+        });
+        const ctxV = document.getElementById("chart-value").getContext("2d");
+        ctxV.chart = new Chart(ctxV, {
+          type: "bar",
+          data: { labels, datasets: [{ label: "Valor", data: values }] },
+        });
+        const ctxQ = document.getElementById("chart-quantity").getContext("2d");
+        ctxQ.chart = new Chart(ctxQ, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{ label: "Quantidade", data: qty, tension: 0.4 }],
+          },
+        });
+        const ctxG = document.getElementById("chart-gain").getContext("2d");
+        ctxG.chart = new Chart(ctxG, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{ label: "Ganho", data: gain, tension: 0.8 }],
+          },
+        });
+        const topSaleIdx = values.indexOf(Math.max(...values));
+        const topQtyIdx = qty.indexOf(Math.max(...qty));
+        const topGainIdx = gain.indexOf(Math.max(...gain));
+        document.getElementById(
+          "marquee-text"
+        ).textContent = `Destaques → Valor: ${labels[topSaleIdx]} (${values[topSaleIdx]}), Quantidade: ${labels[topQtyIdx]} (${qty[topQtyIdx]}), Ganho: ${labels[topGainIdx]} (${gain[topGainIdx]})`;
+      }
+      btnDashboard.onclick = () => {
+        const allRows = [...corpo.rows].map((r) =>
+          [...r.cells].map((c) => c.textContent)
+        );
+        dashboard.style.display = "block";
+        renderDashboard(allRows);
+        document.querySelectorAll("#year-buttons button").forEach((btn) => {
+          btn.onclick = () => {
+            const year = btn.dataset.year;
+            const rows = [...corpo.rows]
+              .map((r) => extractCellText(r))
+              .filter((r) => r[0].startsWith(year));
+            renderDashboard(rows);
+          };
+        });
+      };
+      dashPdf.onclick = async () => {
+        const dashElem = document.getElementById("dashboard");
+        const canvas = await html2canvas(dashElem);
+        const imgData = canvas.toDataURL("image/png");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: "landscape" });
+        const props = pdf.getImageProperties(imgData);
+        const width = pdf.internal.pageSize.getWidth();
+        const height = (props.height * width) / props.width;
+        pdf.addImage(imgData, "PNG", 0, 10, width, height);
+        pdf.save("dashboard.pdf");
+      };
+    </script>
+  </body>
+</html>
